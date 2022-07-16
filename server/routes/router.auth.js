@@ -6,5 +6,6 @@ router.get("/", authController.getUser);
 
 router.post("/api/signup", authController.signup);
 router.post("/api/signin", authController.signin);
+router.post("/api/isTokenValid", authController.validateToken);
 
 module.exports = router;

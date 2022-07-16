@@ -52,9 +52,27 @@ const signin = async (req, res) => {
   }
 };
 
+const validateToken = async (req, res) => {
+  try {
+    const token = req.header("x-auth-token");
+    if (!token) res.status(400).json(false);
+
+    const isVerified = jwt.verify(token, "passwordKey");
+    if (!isVerified) res.status(400).json(false);
+
+    const user = await User.findById(isVerified.id);
+
+    if (!user) res.status(400).json(false);
+
+    res.status(200).json(true);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
 const authRoute = async (req, res) => {
   const user = await User.findById(req.user);
   res.json({ ...user._doc, token: req.token });
 };
 
-module.exports = { getUser, signup, signin, authRoute };
+module.exports = { getUser, signup, signin, validateToken, authRoute };
