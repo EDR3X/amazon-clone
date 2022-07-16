@@ -58,11 +58,11 @@ const validateToken = async (req, res) => {
     if (!token) res.status(400).json(false);
 
     const isVerified = jwt.verify(token, "passwordKey");
-    if (!isVerified) res.status(400).json(false);
+    if (!isVerified) return res.status(400).json(false);
 
     const user = await User.findById(isVerified.id);
 
-    if (!user) res.status(400).json(false);
+    if (!user) return res.status(400).json(false);
 
     res.status(200).json(true);
   } catch (e) {
@@ -70,9 +70,15 @@ const validateToken = async (req, res) => {
   }
 };
 
-const authRoute = async (req, res) => {
+const getUserData = async (req, res) => {
   const user = await User.findById(req.user);
   res.json({ ...user._doc, token: req.token });
 };
 
-module.exports = { getUser, signup, signin, validateToken, authRoute };
+module.exports = {
+  getUser,
+  signup,
+  signin,
+  validateToken,
+  getUserData,
+};
