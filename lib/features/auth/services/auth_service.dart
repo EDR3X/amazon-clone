@@ -1,10 +1,14 @@
 import 'dart:convert';
 
+import 'package:amazon_clone/features/home/screen/home_screen.dart';
 import 'package:amazon_clone/models/user.dart';
+import 'package:amazon_clone/providers/user_provider.dart';
 import 'package:amazon_clone/utils/http_error_handler.dart';
 import 'package:amazon_clone/utils/snackbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../../../constants/api.dart';
 
 class AuthService {
@@ -67,15 +71,64 @@ class AuthService {
         },
       );
 
-      print(response.body);
-
       httpErrorHandler(
         response: response,
         context: context,
-        onSuccess: () {},
+        onSuccess: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          Provider.of<UserProvider>(context, listen: false)
+              .serUser(response.body);
+          await prefs.setString(
+            'x-auth-token',
+            jsonDecode(response.body)['token'],
+          );
+
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            HomeScreen.routeName,
+            (route) => false,
+          );
+        },
       );
     } catch (e) {
-      print(e.toString());
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  Future<void> getUserData(
+    BuildContext context,
+  ) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      if (token == null) {
+        prefs.setString('x-auth-token', '');
+      }
+
+      var tokenRes = await http.post(
+        Uri.parse('$apiUrl/api/isTokenValid'),
+        headers: <String, String>{
+          'Content-Type': 'application/json;charset=UTF-8',
+          'x-auth-token': token!
+        },
+      );
+
+      var response = jsonDecode(tokenRes.body);
+
+      if (response == true) {
+        http.Response userRes = await http.get(
+          Uri.parse('$apiUrl/user/'),
+          headers: <String, String>{
+            'Content-Type': 'application/json;charset=UTF-8',
+            'x-auth-token': token,
+          },
+        );
+
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.serUser(userRes.body);
+      }
+    } catch (e) {
       showSnackBar(context, e.toString());
     }
   }
