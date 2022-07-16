@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amazon_clone/models/user.dart';
 import 'package:amazon_clone/utils/http_error_handler.dart';
 import 'package:amazon_clone/utils/snackbar.dart';
@@ -41,6 +43,36 @@ class AuthService {
             'Account created!',
           );
         },
+      );
+    } catch (e) {
+      print(e.toString());
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  Future<void> signInUser({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final http.Response response = await http.post(
+        Uri.parse("$apiUrl/user/api/signin"),
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json;charset=UTF-8'
+        },
+      );
+
+      print(response.body);
+
+      httpErrorHandler(
+        response: response,
+        context: context,
+        onSuccess: () {},
       );
     } catch (e) {
       print(e.toString());
