@@ -19,22 +19,22 @@ class User {
   });
 
   Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{
-      'id': id,
-      'name': name,
-      'email': email,
-      'address': address,
-      'password': password,
-      'type': type,
-      'token': token,
-    };
+    final result = <String, dynamic>{};
+
+    result.addAll({'id': id});
+    result.addAll({'name': name});
+    result.addAll({'email': email});
+    result.addAll({'address': address});
+    result.addAll({'password': password});
+    result.addAll({'type': type});
+    result.addAll({'token': token});
 
     return result;
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map['_id'] ?? '',
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       address: map['address'] ?? '',

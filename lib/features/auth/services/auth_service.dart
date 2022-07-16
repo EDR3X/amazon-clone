@@ -28,7 +28,7 @@ class AuthService {
         Uri.parse("$apiUrl/user/api/signup"),
         body: user.toJson(),
         headers: <String, String>{
-          'Content-Type': 'application/json; charset = UTF-8'
+          'Content-Type': 'application/json;charset=UTF-8'
         },
       );
 
@@ -43,6 +43,7 @@ class AuthService {
         },
       );
     } catch (e) {
+      print(e.toString());
       showSnackBar(context, e.toString());
     }
   }

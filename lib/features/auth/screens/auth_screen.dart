@@ -37,7 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _nameController.dispose();
   }
 
-  void signUpUser() {
+  void signUp() {
     authService.signUpUser(
       context: context,
       email: _emailController.text,
@@ -114,7 +114,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         text: "SignUp",
                         onTap: () {
                           if (_signupFormKey.currentState!.validate()) {
-                            signUpUser();
+                            signUp();
                           }
                         },
                       )
